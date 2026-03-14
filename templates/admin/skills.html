@@ -1,0 +1,209 @@
+{% extends 'admin/base.html' %}
+{% block title %}Ko'nikmalar{% endblock %}
+{% block page_title %}Ko'nikmalar{% endblock %}
+{% block breadcrumb %}Admin / Ko'nikmalar{% endblock %}
+
+{% block topbar_actions %}
+<button class="topbar-btn topbar-btn-primary" onclick="openAddModal()">
+  <i class="fa-solid fa-plus"></i> Ko'nikma qo'shish
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div class="card-title"><i class="fa-solid fa-code"></i> Barcha ko'nikmalar ({{ skills|length }})</div>
+  </div>
+  <div class="card-body" style="padding:0;">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Nomi</th>
+          <th>Kategoriya</th>
+          <th>Daraja</th>
+          <th>Tartib</th>
+          <th>Amallar</th>
+        </tr>
+      </thead>
+      <tbody id="skills-tbody">
+        {% for s in skills %}
+        <tr id="row-{{ s.id }}">
+          <td style="font-weight:600;">{{ s.name }}</td>
+          <td>
+            {% if s.category == 'frontend' %}
+            <span class="badge badge-green">Frontend</span>
+            {% elif s.category == 'backend' %}
+            <span class="badge badge-gold">Backend</span>
+            {% else %}
+            <span class="badge badge-grey">Tools</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="skill-bar-wrap">
+              <div class="skill-bar-bg" style="width:120px;">
+                <div class="skill-bar-fill" style="width:{{ s.level }}%"></div>
+              </div>
+              <span style="font-size:0.8rem;font-weight:600;color:var(--green-mid);">{{ s.level }}%</span>
+            </div>
+          </td>
+          <td style="color:var(--text-light);">{{ s.sort_order }}</td>
+          <td>
+            <div style="display:flex;gap:6px;">
+              <button class="btn btn-outline btn-sm btn-icon"
+                onclick="openEditModal({{ s.id }}, '{{ s.name }}', {{ s.level }}, '{{ s.category }}', {{ s.sort_order }})"
+                title="Tahrirlash">
+                <i class="fa-solid fa-pen"></i>
+              </button>
+              <button class="btn btn-danger btn-sm btn-icon"
+                onclick="deleteSkill({{ s.id }})" title="O'chirish">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add modal -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Ko'nikma qo'shish</div>
+      <button class="modal-close" onclick="closeModal('add-modal')">×</button>
+    </div>
+    <form id="add-form" onsubmit="submitAdd(event)">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Ko'nikma nomi *</label>
+          <input type="text" name="name" class="form-control" placeholder="HTML5, Python, etc." required>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Kategoriya</label>
+            <select name="category" class="form-control">
+              <option value="frontend">Frontend</option>
+              <option value="backend">Backend</option>
+              <option value="tools">Tools</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tartib raqami</label>
+            <input type="number" name="sort_order" class="form-control" value="0" min="0">
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Daraja: <span id="add-level-val" style="color:var(--green-mid);font-weight:700;">80%</span></label>
+          <input type="range" name="level" min="1" max="100" value="80"
+            oninput="document.getElementById('add-level-val').textContent=this.value+'%'"
+            style="width:100%;accent-color:var(--green-dark);">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('add-modal')">Bekor qilish</button>
+        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Qo'shish</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit modal -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Ko'nikmani tahrirlash</div>
+      <button class="modal-close" onclick="closeModal('edit-modal')">×</button>
+    </div>
+    <form id="edit-form" onsubmit="submitEdit(event)">
+      <input type="hidden" id="edit-id">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Ko'nikma nomi *</label>
+          <input type="text" name="name" id="edit-name" class="form-control" required>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Kategoriya</label>
+            <select name="category" id="edit-category" class="form-control">
+              <option value="frontend">Frontend</option>
+              <option value="backend">Backend</option>
+              <option value="tools">Tools</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tartib raqami</label>
+            <input type="number" name="sort_order" id="edit-sort" class="form-control" min="0">
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Daraja: <span id="edit-level-val" style="color:var(--green-mid);font-weight:700;">80%</span></label>
+          <input type="range" name="level" id="edit-level" min="1" max="100" value="80"
+            oninput="document.getElementById('edit-level-val').textContent=this.value+'%'"
+            style="width:100%;accent-color:var(--green-dark);">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('edit-modal')">Bekor qilish</button>
+        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Saqlash</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+function openAddModal() {
+  document.getElementById('add-modal').classList.add('open');
+  document.querySelector('#add-form [name=name]').focus();
+}
+
+function openEditModal(id, name, level, category, sort_order) {
+  document.getElementById('edit-id').value = id;
+  document.getElementById('edit-name').value = name;
+  document.getElementById('edit-level').value = level;
+  document.getElementById('edit-level-val').textContent = level + '%';
+  document.getElementById('edit-category').value = category;
+  document.getElementById('edit-sort').value = sort_order;
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+// Close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
+});
+
+async function submitAdd(e) {
+  e.preventDefault();
+  const form = document.getElementById('add-form');
+  const fd = new FormData(form);
+  const res = await fetch('/admin/skills/add', { method: 'POST', body: fd });
+  if (res.ok) location.reload();
+}
+
+async function submitEdit(e) {
+  e.preventDefault();
+  const id = document.getElementById('edit-id').value;
+  const form = document.getElementById('edit-form');
+  const fd = new FormData(form);
+  const res = await fetch(`/admin/skills/edit/${id}`, { method: 'POST', body: fd });
+  if (res.ok) location.reload();
+}
+
+async function deleteSkill(id) {
+  if (!confirm('Bu ko\'nikmani o\'chirishni tasdiqlaysizmi?')) return;
+  const res = await fetch(`/admin/skills/delete/${id}`, { method: 'POST' });
+  if (res.ok) {
+    const row = document.getElementById(`row-${id}`);
+    if (row) row.remove();
+  }
+}
+{% endblock %}

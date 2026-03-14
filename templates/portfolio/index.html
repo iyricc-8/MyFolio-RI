@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ hero.name or 'Ilyas Rustambaev' }} — Portfolio</title>
+  <meta name="description" content="Web Fullstack Developer Portfolio">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Favicon SVG -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232c6e49'/><text x='50%' y='56%' dominant-baseline='middle' text-anchor='middle' fill='%23fefee3' font-size='18' font-family='serif' font-weight='900'>IR</text></svg>">
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar" id="navbar">
+  <a href="#hero" class="nav-logo">
+    <div class="nav-logo-icon">IR</div>
+    <span>{{ hero.name.split()[0] if hero.name else 'Ilyas' }}</span>
+  </a>
+
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#hero" class="nav-link active" data-section="hero">
+      {% if current_lang == 'uz' %}Bosh sahifa{% elif current_lang == 'ru' %}Главная{% else %}Home{% endif %}
+    </a></li>
+    <li><a href="#about" class="nav-link" data-section="about">
+      {% if current_lang == 'uz' %}Men haqimda{% elif current_lang == 'ru' %}Обо мне{% else %}About{% endif %}
+    </a></li>
+    <li><a href="#skills" class="nav-link" data-section="skills">
+      {% if current_lang == 'uz' %}Ko'nikmalar{% elif current_lang == 'ru' %}Навыки{% else %}Skills{% endif %}
+    </a></li>
+    <li><a href="#projects" class="nav-link" data-section="projects">
+      {% if current_lang == 'uz' %}Loyihalar{% elif current_lang == 'ru' %}Проекты{% else %}Projects{% endif %}
+    </a></li>
+    <li><a href="#contact" class="nav-link" data-section="contact">
+      {% if current_lang == 'uz' %}Aloqa{% elif current_lang == 'ru' %}Контакт{% else %}Contact{% endif %}
+    </a></li>
+  </ul>
+
+  <div class="nav-right">
+    <div class="lang-switcher">
+      <a href="{{ url_for('set_language', lang='uz') }}" class="lang-btn {% if current_lang == 'uz' %}active{% endif %}">UZ</a>
+      <a href="{{ url_for('set_language', lang='ru') }}" class="lang-btn {% if current_lang == 'ru' %}active{% endif %}">RU</a>
+      <a href="{{ url_for('set_language', lang='en') }}" class="lang-btn {% if current_lang == 'en' %}active{% endif %}">EN</a>
+    </div>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <!-- Decorative leaves -->
+  <div class="hero-leaf" style="top:12%;left:6%">🌿</div>
+  <div class="hero-leaf" style="top:70%;left:3%">🍃</div>
+  <div class="hero-leaf" style="top:20%;right:5%">🌱</div>
+
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-greeting">
+        <span class="dot"></span>
+        {% if current_lang == 'uz' %}{{ hero.greeting_uz or "Salom, men" }}
+        {% elif current_lang == 'ru' %}{{ hero.greeting_ru or "Привет, я" }}
+        {% else %}{{ hero.greeting_en or "Hello, I'm" }}{% endif %}
+      </div>
+
+      <h1 class="hero-name">
+        {{ (hero.name or 'Ilyas Rustambaev').split()[0] }}
+        <span>{{ (hero.name or 'Ilyas Rustambaev').split()[1] if (hero.name or '').split()|length > 1 else '' }}</span>
+      </h1>
+
+      <p class="hero-tagline">
+        ✦ {% if current_lang == 'uz' %}{{ hero.tagline_uz or 'Web Fullstack Developer' }}
+        {% elif current_lang == 'ru' %}{{ hero.tagline_ru or 'Web Fullstack разработчик' }}
+        {% else %}{{ hero.tagline_en or 'Web Fullstack Developer' }}{% endif %}
+      </p>
+
+      <p class="hero-subtitle">
+        {% if current_lang == 'uz' %}{{ hero.subtitle_uz }}
+        {% elif current_lang == 'ru' %}{{ hero.subtitle_ru }}
+        {% else %}{{ hero.subtitle_en }}{% endif %}
+      </p>
+
+      <div class="hero-actions">
+        <a href="#contact" class="btn btn-primary">
+          <i class="fa-solid fa-paper-plane"></i>
+          {% if current_lang == 'uz' %}Bog'lanish{% elif current_lang == 'ru' %}Связаться{% else %}Get in touch{% endif %}
+        </a>
+        {% if hero.cv_file %}
+        <a href="{{ url_for('download_cv') }}" class="btn btn-outline" download>
+          <i class="fa-solid fa-download"></i>
+          {% if current_lang == 'uz' %}CV yuklab olish{% elif current_lang == 'ru' %}Скачать CV{% else %}Download CV{% endif %}
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-photo-wrap">
+        <div class="hero-photo-bg"></div>
+        <div class="hero-photo-border"></div>
+        {% set photo_path = hero.photo or 'profile.png' %}
+        {% if '/' in photo_path %}
+        <img src="{{ url_for('static', filename='uploads/' + photo_path) }}" alt="{{ hero.name }}" class="hero-photo">
+        {% else %}
+        <img src="{{ url_for('static', filename='images/' + photo_path) }}" alt="{{ hero.name }}" class="hero-photo">
+        {% endif %}
+
+        <div class="hero-badge badge-exp">
+          <div class="hero-badge-icon">🎓</div>
+          <div>
+            <div style="font-size:0.65rem;color:var(--text-light);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">IT Park</div>
+            <div>Fullstack Dev</div>
+          </div>
+        </div>
+
+        <div class="hero-badge badge-stack">
+          <div class="hero-badge-icon">⚡</div>
+          <div>
+            <div style="font-size:0.65rem;color:var(--text-light);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Stack</div>
+            <div>React · Django</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>{% if current_lang == 'uz' %}Pastga{% elif current_lang == 'ru' %}Вниз{% else %}Scroll{% endif %}</span>
+  </div>
+</section>
+
+<!-- ── ABOUT ── -->
+<section id="about">
+  <div class="section-inner" style="padding-top:7rem;padding-bottom:7rem;">
+    <div class="about-grid">
+      <div class="about-img-wrap animate-in">
+        <div class="about-img-frame">
+          {% set about_photo = about.photo or 'profile.png' %}
+          {% if '/' in about_photo %}
+          <img src="{{ url_for('static', filename='uploads/' + about_photo) }}" alt="About">
+          {% else %}
+          <img src="{{ url_for('static', filename='images/' + about_photo) }}" alt="About">
+          {% endif %}
+          <div class="about-img-overlay"></div>
+        </div>
+        <div class="about-accent-box"></div>
+        <!-- Decorative pattern -->
+        <svg style="position:absolute;bottom:-16px;left:-16px;opacity:0.12;z-index:-1" width="120" height="120" viewBox="0 0 120 120">
+          <pattern id="dots" x="0" y="0" width="12" height="12" patternUnits="userSpaceOnUse">
+            <circle cx="2" cy="2" r="2" fill="#2c6e49"/>
+          </pattern>
+          <rect width="120" height="120" fill="url(#dots)"/>
+        </svg>
+      </div>
+
+      <div class="about-text">
+        <span class="section-label animate-in">
+          {% if current_lang == 'uz' %}Men haqimda{% elif current_lang == 'ru' %}Обо мне{% else %}About me{% endif %}
+        </span>
+        <h2 class="section-title animate-in animate-delay-1">
+          {% if current_lang == 'uz' %}Kim men?{% elif current_lang == 'ru' %}Кто я?{% else %}Who am I?{% endif %}
+          <em style="display:block">{% if current_lang == 'uz' %}Ishchi va o'quvchi{% elif current_lang == 'ru' %}Разработчик и наставник{% else %}Developer & mentor{% endif %}</em>
+        </h2>
+
+        <p class="about-body animate-in animate-delay-2">
+          {% if current_lang == 'uz' %}{{ about.text_uz }}
+          {% elif current_lang == 'ru' %}{{ about.text_ru }}
+          {% else %}{{ about.text_en }}{% endif %}
+        </p>
+
+        <div class="about-details animate-in animate-delay-3">
+          <div class="about-detail-item">
+            <div>
+              <span class="detail-label">{% if current_lang == 'uz' %}Manzil{% elif current_lang == 'ru' %}Адрес{% else %}Address{% endif %}</span>
+              <span class="detail-val">{{ contact.address or 'Gilamchi 1/9, Xiva' }}</span>
+            </div>
+          </div>
+          <div class="about-detail-item">
+            <div>
+              <span class="detail-label">Email</span>
+              <span class="detail-val">{{ contact.email or 'rustambaev09@gmail.com' }}</span>
+            </div>
+          </div>
+          <div class="about-detail-item">
+            <div>
+              <span class="detail-label">{% if current_lang == 'uz' %}Telefon{% elif current_lang == 'ru' %}Телефон{% else %}Phone{% endif %}</span>
+              <span class="detail-val">{{ contact.phone or '+998914235141' }}</span>
+            </div>
+          </div>
+          <div class="about-detail-item">
+            <div>
+              <span class="detail-label">{% if current_lang == 'uz' %}Millat{% elif current_lang == 'ru' %}Нация{% else %}Nation{% endif %}</span>
+              <span class="detail-val">{% if current_lang == 'uz' %}O'zbek{% elif current_lang == 'ru' %}Узбек{% else %}Uzbek{% endif %}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="animate-in animate-delay-4">
+          <a href="#contact" class="btn btn-primary">
+            <i class="fa-regular fa-envelope"></i>
+            {% if current_lang == 'uz' %}Xabar yuborish{% elif current_lang == 'ru' %}Написать мне{% else %}Send me a message{% endif %}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SKILLS ── -->
+<section id="skills">
+  <div class="section-inner" style="padding-top:7rem;padding-bottom:7rem;">
+    <div class="skills-header">
+      <span class="section-label">
+        {% if current_lang == 'uz' %}Ko'nikmalar{% elif current_lang == 'ru' %}Навыки{% else %}Skills{% endif %}
+      </span>
+      <h2 class="section-title">
+        {% if current_lang == 'uz' %}Mening <em>texnologiyalarim</em>
+        {% elif current_lang == 'ru' %}Мои <em>технологии</em>
+        {% else %}My <em>tech stack</em>{% endif %}
+      </h2>
+    </div>
+
+    {% set cat_labels = {'frontend': {'uz':'Frontend','ru':'Frontend','en':'Frontend'},
+                         'backend':  {'uz':'Backend','ru':'Backend','en':'Backend'},
+                         'tools':    {'uz':'Vositalar','ru':'Инструменты','en':'Tools'}} %}
+
+    <div class="skills-tabs">
+      {% for cat, skills_list in skill_categories.items() %}
+      <button class="skills-tab {% if loop.first %}active{% endif %}" data-tab="tab-{{ cat }}">
+        {{ cat_labels.get(cat, {}).get(current_lang, cat)|title }}
+        <span style="background:rgba(44,110,73,0.15);color:var(--green-dark);border-radius:99px;padding:1px 7px;font-size:0.7rem;margin-left:4px;">{{ skills_list|length }}</span>
+      </button>
+      {% endfor %}
+    </div>
+
+    {% for cat, skills_list in skill_categories.items() %}
+    <div class="skills-panel {% if loop.first %}active{% endif %}" id="tab-{{ cat }}">
+      <div class="skills-grid">
+        {% for skill in skills_list %}
+        <div class="skill-card animate-in" style="transition-delay:{{ loop.index0 * 0.06 }}s">
+          <div class="skill-card-header">
+            <span class="skill-name">{{ skill.name }}</span>
+            <span class="skill-pct">{{ skill.level }}%</span>
+          </div>
+          <div class="skill-bar-bg">
+            <div class="skill-bar-fill" data-width="{{ skill.level }}"></div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ── PROJECTS ── -->
+<section id="projects">
+  <div class="section-inner" style="padding-top:7rem;padding-bottom:7rem;">
+    <div class="projects-header">
+      <div>
+        <span class="section-label">
+          {% if current_lang == 'uz' %}Loyihalar{% elif current_lang == 'ru' %}Проекты{% else %}Projects{% endif %}
+        </span>
+        <h2 class="section-title" style="margin-bottom:0">
+          {% if current_lang == 'uz' %}Mening <em>ishlarim</em>
+          {% elif current_lang == 'ru' %}Мои <em>работы</em>
+          {% else %}My <em>work</em>{% endif %}
+        </h2>
+      </div>
+    </div>
+
+    {% if projects %}
+    <div class="projects-grid">
+      {% for p in projects %}
+      <article class="project-card animate-in" style="transition-delay:{{ loop.index0 * 0.1 }}s">
+        <div class="project-img-wrap">
+          {% if p.image %}
+          <img src="{{ url_for('static', filename='uploads/' + p.image) }}" alt="{{ p.title_en }}">
+          {% else %}
+          <div class="project-img-placeholder">🌿</div>
+          {% endif %}
+          {% if p.featured %}<span class="project-featured-badge">⭐ Featured</span>{% endif %}
+        </div>
+        <div class="project-body">
+          {% if p.tags_list %}
+          <div class="project-tags">
+            {% for tag in p.tags_list %}<span class="project-tag">{{ tag }}</span>{% endfor %}
+          </div>
+          {% endif %}
+          <h3 class="project-title">
+            {% if current_lang == 'uz' %}{{ p.title_uz or p.title_en }}
+            {% elif current_lang == 'ru' %}{{ p.title_ru or p.title_en }}
+            {% else %}{{ p.title_en }}{% endif %}
+          </h3>
+          <p class="project-desc">
+            {% if current_lang == 'uz' %}{{ p.desc_uz or p.desc_en }}
+            {% elif current_lang == 'ru' %}{{ p.desc_ru or p.desc_en }}
+            {% else %}{{ p.desc_en }}{% endif %}
+          </p>
+          <div class="project-links">
+            {% if p.github_url %}
+            <a href="{{ p.github_url }}" target="_blank" class="project-link">
+              <i class="fa-brands fa-github"></i> GitHub
+            </a>
+            {% endif %}
+            {% if p.live_url %}
+            <a href="{{ p.live_url }}" target="_blank" class="project-link">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              {% if current_lang == 'uz' %}Ko'rish{% elif current_lang == 'ru' %}Смотреть{% else %}Live{% endif %}
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="projects-empty">
+      <div class="projects-empty-icon">🌱</div>
+      <h3>
+        {% if current_lang == 'uz' %}Loyihalar tez orada qo'shiladi
+        {% elif current_lang == 'ru' %}Проекты скоро появятся
+        {% else %}Projects coming soon{% endif %}
+      </h3>
+      <p>
+        {% if current_lang == 'uz' %}Admin paneldan loyihalar qo'shing
+        {% elif current_lang == 'ru' %}Добавьте проекты через панель администратора
+        {% else %}Add projects via the admin panel{% endif %}
+      </p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ── CONTACT ── -->
+<section id="contact">
+  <div class="section-inner" style="padding-top:7rem;padding-bottom:7rem;">
+    <div style="text-align:center;max-width:560px;margin:0 auto 4rem;">
+      <span class="section-label" style="justify-content:center;">
+        {% if current_lang == 'uz' %}Aloqa{% elif current_lang == 'ru' %}Контакт{% else %}Contact{% endif %}
+      </span>
+      <h2 class="section-title">
+        {% if current_lang == 'uz' %}Mен bilan <em>bog'laning</em>
+        {% elif current_lang == 'ru' %}Свяжитесь <em>со мной</em>
+        {% else %}Get in <em>touch</em>{% endif %}
+      </h2>
+    </div>
+
+    <div class="contact-grid">
+      <div class="contact-info-card animate-in">
+        <h3>
+          {% if current_lang == 'uz' %}Salom! Xabarnoma yuboring 👋
+          {% elif current_lang == 'ru' %}Привет! Напишите мне 👋
+          {% else %}Hello! Drop me a line 👋{% endif %}
+        </h3>
+        <p>
+          {% if current_lang == 'uz' %}Men har qanday loyiha yoki hamkorlik bo'yicha muloqotga tayyorman!
+          {% elif current_lang == 'ru' %}Я открыт к любому сотрудничеству и обсуждению проектов!
+          {% else %}I'm open to collaboration and discussing any project ideas!{% endif %}
+        </p>
+
+        <div class="contact-items">
+          <div class="contact-item">
+            <div class="contact-item-icon"><i class="fa-regular fa-envelope"></i></div>
+            <div class="contact-item-text">
+              <span class="contact-item-label">Email</span>
+              {{ contact.email or 'rustambaev09@gmail.com' }}
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon"><i class="fa-solid fa-phone"></i></div>
+            <div class="contact-item-text">
+              <span class="contact-item-label">{% if current_lang == 'uz' %}Telefon{% elif current_lang == 'ru' %}Телефон{% else %}Phone{% endif %}</span>
+              {{ contact.phone or '+998914235141' }}
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon"><i class="fa-solid fa-location-dot"></i></div>
+            <div class="contact-item-text">
+              <span class="contact-item-label">{% if current_lang == 'uz' %}Manzil{% elif current_lang == 'ru' %}Адрес{% else %}Location{% endif %}</span>
+              {{ contact.address or 'Gilamchi 1/9, Xiva' }}
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-socials">
+          {% if contact.github %}<a href="{{ contact.github }}" target="_blank" class="contact-social-btn"><i class="fa-brands fa-github"></i></a>{% endif %}
+          {% if contact.linkedin %}<a href="{{ contact.linkedin }}" target="_blank" class="contact-social-btn"><i class="fa-brands fa-linkedin-in"></i></a>{% endif %}
+          {% if contact.telegram %}<a href="{{ contact.telegram }}" target="_blank" class="contact-social-btn"><i class="fa-brands fa-telegram"></i></a>{% endif %}
+        </div>
+      </div>
+
+      <div class="contact-form animate-in animate-delay-2">
+        <form id="contact-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">
+                {% if current_lang == 'uz' %}Ismingiz{% elif current_lang == 'ru' %}Ваше имя{% else %}Your name{% endif %}
+              </label>
+              <input type="text" name="name" class="form-control" required
+                placeholder="{% if current_lang == 'uz' %}Ism Familiya{% elif current_lang == 'ru' %}Имя Фамилия{% else %}Full Name{% endif %}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" name="email" class="form-control" required placeholder="email@example.com">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              {% if current_lang == 'uz' %}Mavzu{% elif current_lang == 'ru' %}Тема{% else %}Subject{% endif %}
+            </label>
+            <input type="text" name="subject" class="form-control"
+              placeholder="{% if current_lang == 'uz' %}Xabar mavzusi{% elif current_lang == 'ru' %}Тема сообщения{% else %}Message topic{% endif %}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              {% if current_lang == 'uz' %}Xabar{% elif current_lang == 'ru' %}Сообщение{% else %}Message{% endif %}
+            </label>
+            <textarea name="body" class="form-control" rows="5" required
+              placeholder="{% if current_lang == 'uz' %}Xabaringizni yozing...{% elif current_lang == 'ru' %}Напишите ваше сообщение...{% else %}Write your message...{% endif %}"></textarea>
+          </div>
+          <div class="form-submit">
+            <button type="submit" class="btn btn-primary">
+              <i class="fa-solid fa-paper-plane"></i>
+              {% if current_lang == 'uz' %}Yuborish{% elif current_lang == 'ru' %}Отправить{% else %}Send{% endif %}
+            </button>
+          </div>
+          <div class="form-status" id="form-status"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="nav-logo" style="margin-bottom:1rem;">
+          <div class="nav-logo-icon" style="background:linear-gradient(135deg,#4c956c,#a8d5b5)">IR</div>
+          <span style="color:var(--cream)">{{ hero.name or 'Ilyas Rustambaev' }}</span>
+        </div>
+        <p>
+          {% if current_lang == 'uz' %}Web Fullstack Developer. Backend va frontend bo'yicha amaliy tajribaga ega dasturchi.
+          {% elif current_lang == 'ru' %}Web Fullstack разработчик. Практический опыт в backend и frontend разработке.
+          {% else %}Web Fullstack Developer. Practical experience in backend and frontend development.{% endif %}
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h4>{% if current_lang == 'uz' %}Bo'limlar{% elif current_lang == 'ru' %}Разделы{% else %}Sections{% endif %}</h4>
+        <ul>
+          <li><a href="#hero">{% if current_lang == 'uz' %}Bosh sahifa{% elif current_lang == 'ru' %}Главная{% else %}Home{% endif %}</a></li>
+          <li><a href="#about">{% if current_lang == 'uz' %}Men haqimda{% elif current_lang == 'ru' %}Обо мне{% else %}About{% endif %}</a></li>
+          <li><a href="#skills">{% if current_lang == 'uz' %}Ko'nikmalar{% elif current_lang == 'ru' %}Навыки{% else %}Skills{% endif %}</a></li>
+          <li><a href="#projects">{% if current_lang == 'uz' %}Loyihalar{% elif current_lang == 'ru' %}Проекты{% else %}Projects{% endif %}</a></li>
+          <li><a href="#contact">{% if current_lang == 'uz' %}Aloqa{% elif current_lang == 'ru' %}Контакт{% else %}Contact{% endif %}</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>{% if current_lang == 'uz' %}Ijtimoiy{% elif current_lang == 'ru' %}Социальные{% else %}Social{% endif %}</h4>
+        <ul>
+          {% if contact.github %}<li><a href="{{ contact.github }}" target="_blank"><i class="fa-brands fa-github"></i> GitHub</a></li>{% endif %}
+          {% if contact.linkedin %}<li><a href="{{ contact.linkedin }}" target="_blank"><i class="fa-brands fa-linkedin"></i> LinkedIn</a></li>{% endif %}
+          {% if contact.telegram %}<li><a href="{{ contact.telegram }}" target="_blank"><i class="fa-brands fa-telegram"></i> Telegram</a></li>{% endif %}
+          <li><a href="mailto:{{ contact.email or 'rustambaev09@gmail.com' }}"><i class="fa-regular fa-envelope"></i> Email</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© {{ 2025 }} {{ hero.name or 'Ilyas Rustambaev' }}. 
+        {% if current_lang == 'uz' %}Barcha huquqlar himoyalangan.
+        {% elif current_lang == 'ru' %}Все права защищены.
+        {% else %}All rights reserved.{% endif %}
+      </span>
+      <div class="footer-bottom-socials">
+        {% if contact.github %}<a href="{{ contact.github }}" target="_blank" class="footer-social"><i class="fa-brands fa-github"></i></a>{% endif %}
+        {% if contact.linkedin %}<a href="{{ contact.linkedin }}" target="_blank" class="footer-social"><i class="fa-brands fa-linkedin-in"></i></a>{% endif %}
+        {% if contact.telegram %}<a href="{{ contact.telegram }}" target="_blank" class="footer-social"><i class="fa-brands fa-telegram"></i></a>{% endif %}
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Back to top -->
+<button id="back-to-top" aria-label="Back to top">
+  <i class="fa-solid fa-chevron-up"></i>
+</button>
+
+<!-- Toast container -->
+<div class="toast-container" id="toast-container"></div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

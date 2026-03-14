@@ -1,0 +1,67 @@
+{% extends 'admin/base.html' %}
+{% block title %}Sozlamalar{% endblock %}
+{% block page_title %}Sozlamalar{% endblock %}
+{% block breadcrumb %}Admin / Sozlamalar{% endblock %}
+
+{% block content %}
+<div style="max-width:520px;">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title"><i class="fa-solid fa-lock"></i> Parolni o'zgartirish</div>
+    </div>
+    <div class="card-body">
+      <form method="POST">
+        <div class="form-group">
+          <label class="form-label">Yangi parol</label>
+          <input type="password" name="new_password" class="form-control"
+            placeholder="Yangi parolni kiriting" required minlength="6">
+        </div>
+        <div class="form-group" style="margin-bottom:1.5rem;">
+          <label class="form-label">Parolni tasdiqlash</label>
+          <input type="password" name="confirm_password" class="form-control"
+            placeholder="Parolni qayta kiriting" required minlength="6">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:0.875rem;">
+          <i class="fa-solid fa-key"></i> Parolni o'zgartirish
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1.25rem;">
+    <div class="card-header">
+      <div class="card-title"><i class="fa-solid fa-circle-info"></i> Tizim ma'lumotlari</div>
+    </div>
+    <div class="card-body">
+      <div style="display:flex;flex-direction:column;gap:0.75rem;">
+        <div style="display:flex;justify-content:space-between;padding:0.75rem;background:rgba(44,110,73,0.04);border-radius:8px;">
+          <span style="font-size:0.85rem;font-weight:500;color:var(--text-mid);">Login</span>
+          <span style="font-size:0.85rem;font-weight:600;color:var(--text-dark);">{{ session.admin_username }}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:0.75rem;background:rgba(44,110,73,0.04);border-radius:8px;">
+          <span style="font-size:0.85rem;font-weight:500;color:var(--text-mid);">Framework</span>
+          <span style="font-size:0.85rem;font-weight:600;color:var(--text-dark);">Flask + SQLite</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:0.75rem;background:rgba(44,110,73,0.04);border-radius:8px;">
+          <span style="font-size:0.85rem;font-weight:500;color:var(--text-mid);">Versiya</span>
+          <span class="badge badge-green">v1.0.0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1.25rem;border:1.5px solid rgba(231,76,60,0.2);">
+    <div class="card-header">
+      <div class="card-title" style="color:#e74c3c;"><i class="fa-solid fa-triangle-exclamation"></i> Xavfli zona</div>
+    </div>
+    <div class="card-body">
+      <p style="font-size:0.875rem;color:var(--text-mid);margin-bottom:1.25rem;line-height:1.6;">
+        Tizimdan chiqish uchun quyidagi tugmani bosing. Barcha sessiyalar o'chiriladi.
+      </p>
+      <a href="{{ url_for('admin_logout') }}" class="btn btn-danger" style="justify-content:center;width:100%;">
+        <i class="fa-solid fa-right-from-bracket"></i> Tizimdan chiqish
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

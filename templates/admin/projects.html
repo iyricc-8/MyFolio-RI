@@ -1,0 +1,83 @@
+{% extends 'admin/base.html' %}
+{% block title %}Loyihalar{% endblock %}
+{% block page_title %}Loyihalar{% endblock %}
+{% block breadcrumb %}Admin / Loyihalar{% endblock %}
+
+{% block topbar_actions %}
+<a href="{{ url_for('admin_project_add') }}" class="topbar-btn topbar-btn-primary">
+  <i class="fa-solid fa-plus"></i> Yangi loyiha
+</a>
+{% endblock %}
+
+{% block content %}
+{% if projects %}
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.25rem;">
+  {% for p in projects %}
+  <div class="card" style="overflow:hidden;">
+    <!-- Image -->
+    <div style="height:160px;overflow:hidden;background:linear-gradient(135deg,rgba(44,110,73,0.1),rgba(255,201,185,0.15));position:relative;">
+      {% if p.image %}
+      <img src="{{ url_for('static', filename='uploads/' + p.image) }}"
+           style="width:100%;height:100%;object-fit:cover;">
+      {% else %}
+      <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;opacity:0.3;">🌿</div>
+      {% endif %}
+      {% if p.featured %}
+      <span style="position:absolute;top:10px;left:10px;background:var(--gold);color:#fff;font-size:0.65rem;font-weight:700;padding:3px 8px;border-radius:99px;letter-spacing:0.06em;">⭐ FEATURED</span>
+      {% endif %}
+    </div>
+
+    <div class="card-body">
+      <!-- Tags -->
+      {% if p.tags_list %}
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:0.75rem;">
+        {% for tag in p.tags_list[:4] %}
+        <span style="font-size:0.65rem;font-weight:600;color:var(--green-dark);background:rgba(44,110,73,0.1);padding:2px 8px;border-radius:99px;">{{ tag }}</span>
+        {% endfor %}
+        {% if p.tags_list|length > 4 %}
+        <span style="font-size:0.65rem;color:var(--text-light);padding:2px 6px;">+{{ p.tags_list|length - 4 }}</span>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <div style="font-family:var(--font-display);font-weight:700;font-size:1rem;color:var(--text-dark);margin-bottom:0.5rem;">
+        {{ p.title_en or p.title_uz or 'Untitled' }}
+      </div>
+      {% if p.desc_en %}
+      <p style="font-size:0.8rem;color:var(--text-light);line-height:1.55;margin-bottom:1rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">
+        {{ p.desc_en }}
+      </p>
+      {% endif %}
+
+      <div style="display:flex;gap:8px;margin-top:auto;">
+        <a href="{{ url_for('admin_project_edit', pid=p.id) }}" class="btn btn-outline btn-sm" style="flex:1;justify-content:center;">
+          <i class="fa-solid fa-pen"></i> Tahrirlash
+        </a>
+        <form method="POST" action="{{ url_for('admin_project_delete', pid=p.id) }}"
+          onsubmit="return confirm('Loyihani o\'chirish?')">
+          <button type="submit" class="btn btn-danger btn-sm btn-icon" title="O'chirish">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card">
+  <div class="card-body" style="text-align:center;padding:5rem 2rem;">
+    <div style="font-size:4rem;margin-bottom:1rem;opacity:0.25;">🌱</div>
+    <h3 style="font-family:var(--font-display);font-size:1.4rem;color:var(--text-mid);margin-bottom:0.5rem;">
+      Hali loyihalar yo'q
+    </h3>
+    <p style="color:var(--text-light);margin-bottom:2rem;font-size:0.9rem;">
+      Birinchi loyihangizni qo'shing!
+    </p>
+    <a href="{{ url_for('admin_project_add') }}" class="btn btn-primary">
+      <i class="fa-solid fa-plus"></i> Loyiha qo'shish
+    </a>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

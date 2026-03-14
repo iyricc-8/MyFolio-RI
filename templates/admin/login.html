@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login — Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body { display:flex; align-items:center; justify-content:center; min-height:100vh;
+           background: linear-gradient(160deg, #1a2e22 0%, #2c6e49 60%, #4c956c 100%); }
+    
+    .login-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 3rem;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.25);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .login-card::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 200px; height: 200px;
+      background: rgba(76,149,108,0.08);
+      border-radius: 50%;
+    }
+    
+    .login-brand {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    
+    .login-logo {
+      width: 64px; height: 64px;
+      background: linear-gradient(135deg, #2c6e49, #4c956c);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #fefee3;
+      box-shadow: 0 8px 24px rgba(44,110,73,0.4);
+    }
+    
+    .login-brand h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1a2e22;
+      margin-bottom: 0.25rem;
+    }
+    
+    .login-brand p {
+      font-size: 0.825rem;
+      color: #6b8f74;
+    }
+    
+    .login-error {
+      background: rgba(231,76,60,0.08);
+      border: 1px solid rgba(231,76,60,0.2);
+      border-radius: 10px;
+      padding: 0.875rem 1rem;
+      font-size: 0.875rem;
+      color: #c0392b;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .login-field {
+      margin-bottom: 1.25rem;
+    }
+    
+    .login-label {
+      display: block;
+      font-size: 0.775rem;
+      font-weight: 600;
+      color: #3d5a45;
+      margin-bottom: 0.45rem;
+    }
+    
+    .login-input-wrap {
+      position: relative;
+    }
+    
+    .login-input-icon {
+      position: absolute;
+      left: 12px; top: 50%;
+      transform: translateY(-50%);
+      color: #6b8f74;
+      font-size: 0.875rem;
+    }
+    
+    .login-input {
+      width: 100%;
+      padding: 0.875rem 1rem 0.875rem 2.5rem;
+      border: 2px solid rgba(44,110,73,0.18);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      color: #1a2e22;
+      background: #f4faf6;
+      outline: none;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.28s ease;
+    }
+    
+    .login-input:focus {
+      border-color: #4c956c;
+      box-shadow: 0 0 0 4px rgba(76,149,108,0.12);
+      background: #fff;
+    }
+    
+    .login-toggle-pass {
+      position: absolute;
+      right: 12px; top: 50%;
+      transform: translateY(-50%);
+      color: #6b8f74;
+      cursor: pointer;
+      font-size: 0.875rem;
+      background: none;
+      border: none;
+      padding: 2px;
+    }
+    
+    .login-btn {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, #2c6e49, #4c956c);
+      color: #fefee3;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: all 0.28s ease;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 6px 20px rgba(44,110,73,0.35);
+    }
+    
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(44,110,73,0.45);
+    }
+    
+    .login-back {
+      display: block;
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.825rem;
+      color: #6b8f74;
+    }
+    
+    .login-back a { color: #2c6e49; font-weight: 600; }
+    .login-back a:hover { text-decoration: underline; }
+    
+    /* Background decorations */
+    .bg-deco {
+      position: fixed;
+      pointer-events: none;
+      opacity: 0.06;
+      font-size: 8rem;
+    }
+    .bg-deco-1 { top: 5%; left: 5%; transform: rotate(-20deg); }
+    .bg-deco-2 { bottom: 10%; right: 5%; transform: rotate(15deg); }
+    .bg-deco-3 { top: 40%; left: 2%; font-size: 5rem; transform: rotate(10deg); }
+  </style>
+</head>
+<body>
+  <div class="bg-deco bg-deco-1">🌿</div>
+  <div class="bg-deco bg-deco-2">🍃</div>
+  <div class="bg-deco bg-deco-3">🌱</div>
+
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="login-logo">IR</div>
+      <h1>Admin Panel</h1>
+      <p>Portfolio boshqaruv paneli</p>
+    </div>
+
+    {% if error %}
+    <div class="login-error">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('admin_login') }}">
+      <div class="login-field">
+        <label class="login-label">Login</label>
+        <div class="login-input-wrap">
+          <i class="fa-solid fa-user login-input-icon"></i>
+          <input type="text" name="username" class="login-input" placeholder="Login kiriting" required autocomplete="username">
+        </div>
+      </div>
+
+      <div class="login-field">
+        <label class="login-label">Parol</label>
+        <div class="login-input-wrap">
+          <i class="fa-solid fa-lock login-input-icon"></i>
+          <input type="password" name="password" id="password-input" class="login-input" placeholder="Parolni kiriting" required autocomplete="current-password">
+          <button type="button" class="login-toggle-pass" id="toggle-pass">
+            <i class="fa-solid fa-eye" id="pass-icon"></i>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="login-btn">
+        <i class="fa-solid fa-right-to-bracket"></i>
+        Kirish
+      </button>
+    </form>
+
+    <div class="login-back">
+      <a href="{{ url_for('index') }}">← Saytga qaytish</a>
+    </div>
+  </div>
+
+  <script>
+    const toggleBtn = document.getElementById('toggle-pass');
+    const passInput = document.getElementById('password-input');
+    const passIcon = document.getElementById('pass-icon');
+
+    toggleBtn.addEventListener('click', () => {
+      if (passInput.type === 'password') {
+        passInput.type = 'text';
+        passIcon.className = 'fa-solid fa-eye-slash';
+      } else {
+        passInput.type = 'password';
+        passIcon.className = 'fa-solid fa-eye';
+      }
+    });
+  </script>
+</body>
+</html>

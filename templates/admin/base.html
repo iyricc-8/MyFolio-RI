@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Admin{% endblock %} — Portfolio Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232c6e49'/><text x='50%' y='56%' dominant-baseline='middle' text-anchor='middle' fill='%23fefee3' font-size='14' font-family='serif' font-weight='900'>⚙</text></svg>">
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo-icon">IR</div>
+    <div class="sidebar-brand">
+      Portfolio
+      <small>Admin Panel</small>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Umumiy</div>
+    <a href="{{ url_for('admin_dashboard') }}" class="sidebar-nav-item {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+      <span class="nav-icon"><i class="fa-solid fa-gauge-high"></i></span>
+      Dashboard
+    </a>
+
+    <div class="nav-section-label" style="margin-top:0.5rem;">Portfolio Bo'limlari</div>
+    <a href="{{ url_for('admin_hero') }}" class="sidebar-nav-item {% if request.endpoint == 'admin_hero' %}active{% endif %}">
+      <span class="nav-icon"><i class="fa-solid fa-house"></i></span>
+      Hero / Bosh sahifa
+    </a>
+    <a href="{{ url_for('admin_about') }}" class="sidebar-nav-item {% if request.endpoint == 'admin_about' %}active{% endif %}">
+      <span class="nav-icon"><i class="fa-solid fa-user"></i></span>
+      Men haqimda
+    </a>
+    <a href="{{ url_for('admin_skills') }}" class="sidebar-nav-item {% if request.endpoint == 'admin_skills' %}active{% endif %}">
+      <span class="nav-icon"><i class="fa-solid fa-code"></i></span>
+      Ko'nikmalar
+    </a>
+    <a href="{{ url_for('admin_projects') }}" class="sidebar-nav-item {% if request.endpoint in ['admin_projects','admin_project_add','admin_project_edit'] %}active{% endif %}">
+      <span class="nav-icon"><i class="fa-solid fa-diagram-project"></i></span>
+      Loyihalar
+    </a>
+    <a href="{{ url_for('admin_contact') }}" class="sidebar-nav-item {% if request.endpoint == 'admin_contact' %}active{% endif %}">
+      <span class="nav-icon"><i class="fa-solid fa-address-book"></i></span>
+      Aloqa ma'lumotlari
+    </a>
+
+    <div class="nav-section-label" style="margin-top:0.5rem;">Boshqa</div>
+    <a href="{{ url_for('admin_messages') }}" class="sidebar-nav-item {% if request.endpoint == 'admin_messages' %}active{% endif %}">
+      <span class="nav-icon"><i class="fa-solid fa-inbox"></i></span>
+      Xabarlar
+      {% set unread = g_unread if g_unread is defined else 0 %}
+    </a>
+    <a href="{{ url_for('admin_settings') }}" class="sidebar-nav-item {% if request.endpoint == 'admin_settings' %}active{% endif %}">
+      <span class="nav-icon"><i class="fa-solid fa-gear"></i></span>
+      Sozlamalar
+    </a>
+    <a href="{{ url_for('index') }}" target="_blank" class="sidebar-nav-item">
+      <span class="nav-icon"><i class="fa-solid fa-arrow-up-right-from-square"></i></span>
+      Saytni ko'rish
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar">{{ session.admin_username[0]|upper if session.admin_username else 'A' }}</div>
+      <div>
+        <div class="sidebar-username">{{ session.admin_username or 'Admin' }}</div>
+        <div class="sidebar-role">Administrator</div>
+      </div>
+    </div>
+    <a href="{{ url_for('admin_logout') }}" class="sidebar-logout">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      Chiqish
+    </a>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<div class="admin-main">
+  <!-- Topbar -->
+  <header class="admin-topbar">
+    <div class="topbar-left">
+      <button class="topbar-btn topbar-btn-outline" id="sidebar-toggle" style="padding:0.4rem 0.75rem;">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <div>
+        <div class="topbar-title">{% block page_title %}Dashboard{% endblock %}</div>
+        <div class="topbar-breadcrumb">{% block breadcrumb %}Admin / Dashboard{% endblock %}</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      {% block topbar_actions %}{% endblock %}
+      <a href="{{ url_for('index') }}" target="_blank" class="topbar-btn topbar-btn-outline">
+        <i class="fa-solid fa-eye"></i> Sayt
+      </a>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="admin-content">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-messages">
+      {% for cat, msg in messages %}
+      <div class="flash {{ cat }}">
+        <i class="fa-solid {% if cat == 'success' %}fa-circle-check{% else %}fa-circle-exclamation{% endif %}"></i>
+        {{ msg }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+</div>
+
+<script>
+  // Sidebar toggle
+  const sidebarToggle = document.getElementById('sidebar-toggle');
+  const sidebar = document.getElementById('sidebar');
+  if (sidebarToggle && sidebar) {
+    sidebarToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+  }
+
+  // Drag-over for upload areas
+  document.querySelectorAll('.img-upload-area').forEach(area => {
+    area.addEventListener('dragover', e => { e.preventDefault(); area.classList.add('drag-over'); });
+    area.addEventListener('dragleave', () => area.classList.remove('drag-over'));
+    area.addEventListener('drop', e => { e.preventDefault(); area.classList.remove('drag-over'); });
+  });
+
+  // Preview image on file select
+  document.querySelectorAll('input[type=file][data-preview]').forEach(input => {
+    input.addEventListener('change', function() {
+      const preview = document.getElementById(this.dataset.preview);
+      if (preview && this.files[0]) {
+        preview.src = URL.createObjectURL(this.files[0]);
+        preview.style.display = 'block';
+      }
+    });
+  });
+
+  {% block scripts %}{% endblock %}
+</script>
+</body>
+</html>

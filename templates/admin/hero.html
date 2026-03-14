@@ -1,0 +1,166 @@
+{% extends 'admin/base.html' %}
+{% block title %}Hero Bo'limi{% endblock %}
+{% block page_title %}Hero Bo'limi{% endblock %}
+{% block breadcrumb %}Admin / Hero{% endblock %}
+
+{% block topbar_actions %}
+<button type="submit" form="hero-form" class="topbar-btn topbar-btn-primary">
+  <i class="fa-solid fa-floppy-disk"></i> Saqlash
+</button>
+{% endblock %}
+
+{% block content %}
+<form method="POST" enctype="multipart/form-data" id="hero-form">
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;align-items:start;">
+
+    <!-- Left: text fields -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><i class="fa-solid fa-pen-nib"></i> Matn ma'lumotlari</div>
+      </div>
+      <div class="card-body">
+
+        <div class="form-section">
+          <div class="form-section-title">Ism</div>
+          <div class="form-group">
+            <label class="form-label">To'liq ism</label>
+            <input type="text" name="name" class="form-control"
+              value="{{ hero.name or 'Ilyas Rustambaev' }}" placeholder="Ism Familiya" required>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Salomlashuv matni <span>(Barcha tillarda)</span></div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">🇺🇿 O'zbek</label>
+              <input type="text" name="greeting_uz" class="form-control"
+                value="{{ hero.greeting_uz or 'Salom, men' }}" placeholder="Salom, men">
+            </div>
+            <div class="form-group">
+              <label class="form-label">🇷🇺 Rus</label>
+              <input type="text" name="greeting_ru" class="form-control"
+                value="{{ hero.greeting_ru or 'Привет, я' }}" placeholder="Привет, я">
+            </div>
+            <div class="form-group">
+              <label class="form-label">🇬🇧 Ingliz</label>
+              <input type="text" name="greeting_en" class="form-control"
+                value="{{ hero.greeting_en or 'Hello, I\'m' }}" placeholder="Hello, I'm">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Tagline / Kasb unvoni</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">🇺🇿 O'zbek</label>
+              <input type="text" name="tagline_uz" class="form-control"
+                value="{{ hero.tagline_uz or 'Web Fullstack Developer' }}" placeholder="Web Fullstack Developer">
+            </div>
+            <div class="form-group">
+              <label class="form-label">🇷🇺 Rus</label>
+              <input type="text" name="tagline_ru" class="form-control"
+                value="{{ hero.tagline_ru or 'Web Fullstack разработчик' }}" placeholder="Web Fullstack разработчик">
+            </div>
+            <div class="form-group">
+              <label class="form-label">🇬🇧 Ingliz</label>
+              <input type="text" name="tagline_en" class="form-control"
+                value="{{ hero.tagline_en or 'Web Fullstack Developer' }}" placeholder="Web Fullstack Developer">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">Kichik tavsif <span>(Hero ostidagi matn)</span></div>
+          <div class="form-group">
+            <label class="form-label">🇺🇿 O'zbek</label>
+            <textarea name="subtitle_uz" class="form-control" rows="3"
+              placeholder="O'zingiz haqingizda qisqacha...">{{ hero.subtitle_uz or '' }}</textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">🇷🇺 Rus</label>
+            <textarea name="subtitle_ru" class="form-control" rows="3"
+              placeholder="Кратко о себе...">{{ hero.subtitle_ru or '' }}</textarea>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">🇬🇧 Ingliz</label>
+            <textarea name="subtitle_en" class="form-control" rows="3"
+              placeholder="Briefly about yourself...">{{ hero.subtitle_en or '' }}</textarea>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Right: media -->
+    <div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+      <!-- Photo -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-regular fa-image"></i> Profil rasmi</div>
+        </div>
+        <div class="card-body">
+          {% if hero.photo %}
+          <div style="margin-bottom:1rem;text-align:center;">
+            {% if '/' in hero.photo %}
+            <img src="{{ url_for('static', filename='uploads/' + hero.photo) }}"
+                 id="photo-preview" style="width:100%;max-height:200px;object-fit:cover;border-radius:10px;object-position:top;">
+            {% else %}
+            <img src="{{ url_for('static', filename='images/' + hero.photo) }}"
+                 id="photo-preview" style="width:100%;max-height:200px;object-fit:cover;border-radius:10px;object-position:top;">
+            {% endif %}
+          </div>
+          {% else %}
+          <img id="photo-preview" style="display:none;width:100%;max-height:200px;object-fit:cover;border-radius:10px;margin-bottom:1rem;">
+          {% endif %}
+          <div class="img-upload-area">
+            <input type="file" name="photo" accept="image/*" data-preview="photo-preview">
+            <div class="img-upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+            <div class="img-upload-text">Rasm yuklash</div>
+            <div class="img-upload-hint">PNG, JPG, WEBP · max 8MB</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CV -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-regular fa-file-pdf"></i> CV fayli</div>
+        </div>
+        <div class="card-body">
+          {% if hero.cv_file %}
+          <div style="display:flex;align-items:center;gap:10px;padding:0.75rem;background:rgba(44,110,73,0.06);border-radius:8px;margin-bottom:1rem;">
+            <i class="fa-solid fa-file-pdf" style="color:#e74c3c;font-size:1.4rem;"></i>
+            <div>
+              <div style="font-size:0.8rem;font-weight:600;color:var(--text-dark);">Joriy CV</div>
+              <div style="font-size:0.72rem;color:var(--text-light);">{{ hero.cv_file.split('/')[-1] }}</div>
+            </div>
+            <a href="{{ url_for('download_cv') }}" target="_blank"
+               style="margin-left:auto;font-size:0.75rem;color:var(--green-mid);font-weight:600;">
+              <i class="fa-solid fa-download"></i>
+            </a>
+          </div>
+          {% endif %}
+          <div class="img-upload-area">
+            <input type="file" name="cv_file" accept=".pdf,.doc,.docx">
+            <div class="img-upload-icon"><i class="fa-solid fa-file-arrow-up"></i></div>
+            <div class="img-upload-text">CV yuklash</div>
+            <div class="img-upload-hint">PDF, DOC, DOCX · max 16MB</div>
+          </div>
+          <p style="font-size:0.72rem;color:var(--text-light);margin-top:0.75rem;">
+            <i class="fa-solid fa-info-circle"></i>
+            CV yuklangandan so'ng saytda "CV yuklab olish" tugmasi ko'rinadi.
+          </p>
+        </div>
+      </div>
+
+      <!-- Save btn -->
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:1rem;">
+        <i class="fa-solid fa-floppy-disk"></i> O'zgarishlarni saqlash
+      </button>
+    </div>
+  </div>
+</form>
+{% endblock %}

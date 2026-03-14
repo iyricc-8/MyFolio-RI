@@ -1,0 +1,150 @@
+{% extends 'admin/base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block breadcrumb %}Admin / Dashboard{% endblock %}
+
+{% block content %}
+<!-- Stats -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon green"><i class="fa-solid fa-diagram-project" style="color:#2c6e49"></i></div>
+    <div>
+      <div class="stat-num">{{ stats.projects }}</div>
+      <div class="stat-label">Loyihalar</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon peach"><i class="fa-solid fa-code" style="color:#d68c45"></i></div>
+    <div>
+      <div class="stat-num">{{ stats.skills }}</div>
+      <div class="stat-label">Ko'nikmalar</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon gold"><i class="fa-solid fa-inbox" style="color:#d68c45"></i></div>
+    <div>
+      <div class="stat-num">{{ stats.messages }}</div>
+      <div class="stat-label">Jami xabarlar</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon blue"><i class="fa-solid fa-envelope-open" style="color:#3498db"></i></div>
+    <div>
+      <div class="stat-num">{{ stats.unread }}</div>
+      <div class="stat-label">O'qilmagan</div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick actions + Recent messages -->
+<div style="display:grid;grid-template-columns:1fr 1.5fr;gap:1.5rem;align-items:start;">
+
+  <!-- Quick actions -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title"><i class="fa-solid fa-bolt"></i> Tezkor amallar</div>
+    </div>
+    <div class="card-body" style="display:flex;flex-direction:column;gap:0.75rem;">
+      <a href="{{ url_for('admin_hero') }}" class="btn btn-outline" style="justify-content:flex-start;">
+        <i class="fa-solid fa-house"></i> Hero bo'limini tahrirlash
+      </a>
+      <a href="{{ url_for('admin_about') }}" class="btn btn-outline" style="justify-content:flex-start;">
+        <i class="fa-solid fa-user"></i> Haqimda bo'limini tahrirlash
+      </a>
+      <a href="{{ url_for('admin_skills') }}" class="btn btn-outline" style="justify-content:flex-start;">
+        <i class="fa-solid fa-code"></i> Ko'nikmalarni boshqarish
+      </a>
+      <a href="{{ url_for('admin_project_add') }}" class="btn btn-primary" style="justify-content:flex-start;">
+        <i class="fa-solid fa-plus"></i> Yangi loyiha qo'shish
+      </a>
+      <a href="{{ url_for('admin_contact') }}" class="btn btn-outline" style="justify-content:flex-start;">
+        <i class="fa-solid fa-address-book"></i> Aloqa ma'lumotlarini yangilash
+      </a>
+      <a href="{{ url_for('index') }}" target="_blank" class="btn btn-outline" style="justify-content:flex-start;">
+        <i class="fa-solid fa-eye"></i> Saytni ko'rish
+      </a>
+    </div>
+  </div>
+
+  <!-- Recent messages -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title"><i class="fa-solid fa-inbox"></i> So'nggi xabarlar</div>
+      <a href="{{ url_for('admin_messages') }}" class="btn btn-outline btn-sm">Barchasi</a>
+    </div>
+    <div class="card-body" style="padding:0;">
+      {% if messages %}
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Ism</th>
+            <th>Mavzu</th>
+            <th>Sana</th>
+            <th>Holat</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in messages %}
+          <tr>
+            <td>
+              <div style="font-weight:600;">{{ m.name }}</div>
+              <div style="font-size:0.75rem;color:var(--text-light);">{{ m.email }}</div>
+            </td>
+            <td style="max-width:160px;">
+              <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ m.subject or '—' }}</div>
+            </td>
+            <td style="white-space:nowrap;font-size:0.78rem;color:var(--text-light);">
+              {{ m.created_at[:10] if m.created_at else '—' }}
+            </td>
+            <td>
+              {% if m.read %}
+              <span class="badge badge-grey">O'qilgan</span>
+              {% else %}
+              <span class="badge badge-green">Yangi</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div style="text-align:center;padding:3rem;color:var(--text-light);">
+        <i class="fa-regular fa-inbox" style="font-size:2rem;display:block;margin-bottom:0.5rem;opacity:0.4;"></i>
+        Xabarlar yo'q
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Portfolio sections overview -->
+<div style="margin-top:1.5rem;">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title"><i class="fa-solid fa-layer-group"></i> Portfolio bo'limlari</div>
+    </div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;">
+        {% set sections = [
+          ('Hero', 'fa-house', 'admin_hero', 'green', 'Bosh sahifa va tanishuv'),
+          ('About', 'fa-user', 'admin_about', 'peach', 'Men haqimda ma\'lumot'),
+          ('Skills', 'fa-code', 'admin_skills', 'gold', 'Texnik ko\'nikmalar'),
+          ('Projects', 'fa-diagram-project', 'admin_projects', 'green', 'Ishlar portfoliosi'),
+          ('Contact', 'fa-address-book', 'admin_contact', 'peach', 'Aloqa ma\'lumotlari'),
+        ] %}
+        {% for name, icon, endpoint, color, desc in sections %}
+        <a href="{{ url_for(endpoint) }}" style="text-decoration:none;">
+          <div style="border:1.5px solid rgba(44,110,73,0.12);border-radius:12px;padding:1.25rem;transition:all 0.28s;cursor:pointer;" 
+               onmouseover="this.style.borderColor='#4c956c';this.style.background='rgba(44,110,73,0.04)'"
+               onmouseout="this.style.borderColor='rgba(44,110,73,0.12)';this.style.background=''">
+            <div style="font-size:1.4rem;margin-bottom:0.75rem;color:var(--green-mid)"><i class="fa-solid {{ icon }}"></i></div>
+            <div style="font-weight:700;font-size:0.95rem;color:var(--text-dark);margin-bottom:0.25rem;">{{ name }}</div>
+            <div style="font-size:0.775rem;color:var(--text-light);">{{ desc }}</div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,157 @@
+{% extends 'admin/base.html' %}
+{% block title %}Xabarlar{% endblock %}
+{% block page_title %}Kiruvchi xabarlar{% endblock %}
+{% block breadcrumb %}Admin / Xabarlar{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      <i class="fa-solid fa-inbox"></i>
+      Barcha xabarlar ({{ messages|length }})
+    </div>
+  </div>
+  <div class="card-body" style="padding:0;">
+    {% if messages %}
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Ism</th>
+          <th>Email</th>
+          <th>Mavzu</th>
+          <th>Xabar</th>
+          <th>Sana</th>
+          <th>Holat</th>
+          <th>Amallar</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in messages %}
+        <tr id="msg-row-{{ m.id }}" style="{% if not m.read %}background:rgba(44,110,73,0.04);{% endif %}">
+          <td style="font-weight:600;white-space:nowrap;">{{ m.name }}</td>
+          <td style="font-size:0.8rem;">
+            <a href="mailto:{{ m.email }}" style="color:var(--green-dark);">{{ m.email }}</a>
+          </td>
+          <td style="max-width:140px;">
+            <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.875rem;">
+              {{ m.subject or '—' }}
+            </div>
+          </td>
+          <td style="max-width:220px;">
+            <div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:0.825rem;color:var(--text-mid);">
+              {{ m.body[:80] }}{% if m.body|length > 80 %}...{% endif %}
+            </div>
+          </td>
+          <td style="white-space:nowrap;font-size:0.78rem;color:var(--text-light);">
+            {{ m.created_at[:16].replace('T',' ') if m.created_at else '—' }}
+          </td>
+          <td>
+            {% if m.read %}
+            <span class="badge badge-grey">O'qilgan</span>
+            {% else %}
+            <span class="badge badge-green" id="badge-{{ m.id }}">Yangi</span>
+            {% endif %}
+          </td>
+          <td>
+            <div style="display:flex;gap:6px;">
+              <button class="btn btn-outline btn-sm btn-icon"
+                onclick="viewMsg({{ m.id }}, '{{ m.name|e }}', '{{ m.email|e }}', '{{ m.subject|e }}', `{{ m.body|e }}`)"
+                title="Ko'rish">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+              {% if not m.read %}
+              <button class="btn btn-outline btn-sm btn-icon"
+                onclick="markRead({{ m.id }})" title="O'qildi">
+                <i class="fa-solid fa-check"></i>
+              </button>
+              {% endif %}
+              <button class="btn btn-danger btn-sm btn-icon"
+                onclick="deleteMsg({{ m.id }})" title="O'chirish">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div style="text-align:center;padding:5rem 2rem;color:var(--text-light);">
+      <div style="font-size:3rem;margin-bottom:1rem;opacity:0.3;"><i class="fa-regular fa-inbox"></i></div>
+      <div style="font-weight:600;font-size:1rem;color:var(--text-mid);">Xabarlar yo'q</div>
+      <div style="font-size:0.85rem;margin-top:0.25rem;">Saytdagi aloqa formasidan xabarlar bu yerga tushadi.</div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- View Message Modal -->
+<div class="modal-overlay" id="msg-modal">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-header">
+      <div class="modal-title"><i class="fa-regular fa-envelope-open"></i> Xabar</div>
+      <button class="modal-close" onclick="document.getElementById('msg-modal').classList.remove('open')">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1.25rem;">
+        <div style="background:rgba(44,110,73,0.05);border-radius:8px;padding:0.875rem;">
+          <div style="font-size:0.68rem;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;">Ism</div>
+          <div id="modal-name" style="font-weight:600;font-size:0.9rem;"></div>
+        </div>
+        <div style="background:rgba(44,110,73,0.05);border-radius:8px;padding:0.875rem;">
+          <div style="font-size:0.68rem;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;">Email</div>
+          <div id="modal-email" style="font-size:0.875rem;word-break:break-all;"></div>
+        </div>
+      </div>
+      <div style="background:rgba(44,110,73,0.05);border-radius:8px;padding:0.875rem;margin-bottom:1rem;">
+        <div style="font-size:0.68rem;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:3px;">Mavzu</div>
+        <div id="modal-subject" style="font-weight:500;"></div>
+      </div>
+      <div style="background:rgba(44,110,73,0.05);border-radius:8px;padding:0.875rem;">
+        <div style="font-size:0.68rem;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;">Xabar</div>
+        <div id="modal-body" style="font-size:0.9rem;line-height:1.65;white-space:pre-wrap;"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="document.getElementById('msg-modal').classList.remove('open')">Yopish</button>
+      <a id="modal-reply" href="#" class="btn btn-primary">
+        <i class="fa-solid fa-reply"></i> Javob berish
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+function viewMsg(id, name, email, subject, body) {
+  document.getElementById('modal-name').textContent = name;
+  document.getElementById('modal-email').textContent = email;
+  document.getElementById('modal-subject').textContent = subject || '—';
+  document.getElementById('modal-body').textContent = body;
+  document.getElementById('modal-reply').href = 'mailto:' + email + '?subject=Re: ' + encodeURIComponent(subject || '');
+  document.getElementById('msg-modal').classList.add('open');
+  // auto-mark read
+  markRead(id);
+}
+
+async function markRead(id) {
+  await fetch(`/admin/messages/read/${id}`, { method: 'POST' });
+  const badge = document.getElementById(`badge-${id}`);
+  if (badge) { badge.textContent = "O'qilgan"; badge.className = 'badge badge-grey'; }
+  const row = document.getElementById(`msg-row-${id}`);
+  if (row) row.style.background = '';
+}
+
+async function deleteMsg(id) {
+  if (!confirm('Bu xabarni o\'chirish?')) return;
+  const res = await fetch(`/admin/messages/delete/${id}`, { method: 'POST' });
+  if (res.ok) {
+    const row = document.getElementById(`msg-row-${id}`);
+    if (row) row.remove();
+  }
+}
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+});
+{% endblock %}
