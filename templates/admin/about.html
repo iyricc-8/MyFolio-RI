@@ -46,13 +46,7 @@
         <div class="card-body">
           {% if about.photo %}
           <div style="margin-bottom:1rem;">
-            {% if '/' in about.photo %}
-            <img src="{{ url_for('static', filename='uploads/' + about.photo) }}"
-                 id="about-preview" style="width:100%;height:200px;object-fit:cover;border-radius:10px;object-position:top;">
-            {% else %}
-            <img src="{{ url_for('static', filename='images/' + about.photo) }}"
-                 id="about-preview" style="width:100%;height:200px;object-fit:cover;border-radius:10px;object-position:top;">
-            {% endif %}
+            <img src="{{ photo_url(about.photo) }}" id="about-preview" style="width:100%;height:200px;object-fit:cover;border-radius:10px;object-position:top;">
           </div>
           {% else %}
           <img id="about-preview" style="display:none;width:100%;height:200px;object-fit:cover;border-radius:10px;margin-bottom:1rem;">

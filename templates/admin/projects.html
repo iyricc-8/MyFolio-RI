@@ -17,7 +17,7 @@
     <!-- Image -->
     <div style="height:160px;overflow:hidden;background:linear-gradient(135deg,rgba(44,110,73,0.1),rgba(255,201,185,0.15));position:relative;">
       {% if p.image %}
-      <img src="{{ url_for('static', filename='uploads/' + p.image) }}"
+      <img src="{{ photo_url(p.image) }}"
            style="width:100%;height:100%;object-fit:cover;">
       {% else %}
       <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;opacity:0.3;">🌿</div>

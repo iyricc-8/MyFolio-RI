@@ -1,69 +1,56 @@
 # 🌿 Ilyas Rustambaev — Portfolio
 
-Flask + SQLite asosidagi shaxsiy portfolio va admin panel.
+Flask + PostgreSQL (Neon) + Supabase Storage
 
-## Ishga tushurish
+## 🚀 Локальный запуск
 
 ```bash
-# 1. Kutubxonalarni o'rnatish
 pip install -r requirements.txt
-
-# 2. Ishga tushurish
+cp .env.example .env
+# Заполните .env своими ключами
 python run.py
 ```
 
-Sayt: http://localhost:5000  
-Admin: http://localhost:5000/admin
+## ☁️ Деплой на Vercel
 
-## Admin kirish
+### Шаг 1 — GitHub
+1. Создайте репозиторий на github.com
+2. Загрузите все файлы проекта (без `.env` и `instance/`)
 
-- **Login:** iyricc-8  
-- **Parol:** P0O9I8U7Y6T5
+### Шаг 2 — Vercel
+1. Зайдите на **vercel.com** → New Project
+2. Импортируйте ваш GitHub репозиторий
+3. Framework Preset: **Other**
+4. Нажмите **Deploy**
 
-## Loyiha tuzilishi
+### Шаг 3 — Переменные окружения в Vercel
+В настройках проекта (Settings → Environment Variables) добавьте:
 
+| Ключ | Значение |
+|------|---------|
+| `DATABASE_URL` | `postgresql://neondb_owner:...@neon.tech/neondb?sslmode=require` |
+| `SUPABASE_URL` | `https://xxxx.supabase.co` |
+| `SUPABASE_SERVICE_KEY` | `eyJhbG...` (service_role key) |
+| `SUPABASE_BUCKET` | `portfolio` |
+| `SECRET_KEY` | любая длинная случайная строка |
+
+### Шаг 4 — Supabase Storage
+1. supabase.com → Storage → New Bucket
+2. Название: `portfolio`
+3. Включите **Public bucket**
+
+## 🔐 Admin
+- URL: `ваш-сайт.vercel.app/admin`
+- Login: `iyricc-8`
+- Password: `P0O9I8U7Y6T5`
+
+## 📁 Структура
 ```
 portfolio/
-├── app.py              # Asosiy Flask ilovasi
-├── run.py              # Ishga tushurish fayli
-├── requirements.txt    # Kutubxonalar
-├── instance/
-│   └── portfolio.db    # SQLite ma'lumotlar bazasi
-├── static/
-│   ├── css/
-│   │   ├── style.css   # Portfolio CSS
-│   │   └── admin.css   # Admin CSS
-│   ├── js/
-│   │   └── main.js     # JavaScript
-│   ├── images/         # Statik rasmlar
-│   └── uploads/        # Yuklangan fayllar
-└── templates/
-    ├── portfolio/
-    │   └── index.html  # Asosiy sahifa
-    └── admin/
-        ├── base.html   # Admin asosi
-        ├── login.html  # Kirish sahifasi
-        ├── dashboard.html
-        ├── hero.html
-        ├── about.html
-        ├── skills.html
-        ├── projects.html
-        ├── project_form.html
-        ├── contact.html
-        ├── messages.html
-        └── settings.html
+├── app.py              # Flask приложение
+├── vercel.json         # Vercel конфиг
+├── requirements.txt    # Зависимости
+├── .env.example        # Пример переменных окружения
+├── static/             # CSS, JS, изображения
+└── templates/          # HTML шаблоны
 ```
-
-## Tillar
-
-- 🇺🇿 O'zbek (lotin)
-- 🇷🇺 Русский
-- 🇬🇧 English
-
-## Asosiy ranglar
-
-- `#2c6e49` — To'q yashil
-- `#4c956c` — O'rta yashil  
-- `#fefee3` — Krem
-- `#ffc9b9` — Shaftoli
-- `#d68c45` — Oltin
