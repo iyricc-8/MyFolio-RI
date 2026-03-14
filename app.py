@@ -1,7 +1,6 @@
 import os
 import json
 import uuid
-import io
 from datetime import datetime
 from functools import wraps
 from flask import (
@@ -30,7 +29,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 # ── Supabase storage helper ──────────────────────────────────────────────────
 
-def supabase_upload(file_bytes: bytes, filename: str, content_type: str) -> str | None:
+def supabase_upload(file_bytes, filename, content_type):
     """Upload file to Supabase Storage, return public URL or None."""
     if not SUPABASE_URL or not SUPABASE_KEY:
         return None
@@ -324,7 +323,8 @@ def download_cv():
 
 # ── Admin: auth ───────────────────────────────────────────────────────────────
 
-@app.route('/admin'); @app.route('/admin/')
+@app.route('/admin')
+@app.route('/admin/')
 def admin_index():
     return redirect(url_for('admin_dashboard') if session.get('admin_logged_in') else url_for('admin_login'))
 
@@ -639,9 +639,11 @@ def admin_settings():
 
 # ── Init on startup ───────────────────────────────────────────────────────────
 
+# Init DB on cold start
 if DATABASE_URL:
     try:
         init_db()
+        print("DB initialized OK")
     except Exception as e:
         print(f"DB init warning: {e}")
 
